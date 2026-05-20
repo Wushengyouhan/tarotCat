@@ -1,0 +1,20 @@
+# 服务器用：把 SILICONFLOW_API_KEY 的占位符换成你的真实 Key 后再启动。
+# ⚠️ 一旦写入真实密钥，请勿把本文件推回 GitHub 等公开仓库；只放在服务器上即可。
+#
+# docker login crpi-wzkmn99umn8syi28.cn-shanghai.personal.cr.aliyuncs.com
+# docker compose pull && docker compose up -d
+
+name: tarot-pwa
+
+services:
+  web:
+    image: crpi-wzkmn99umn8syi28.cn-shanghai.personal.cr.aliyuncs.com/wushengyouhan/tarotcat:latest
+    container_name: tarot-pwa
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      NODE_ENV: production
+      SILICONFLOW_API_KEY: "sk-uoeqvkevryaqbjiohpfmoddosjtkeopjtekvlmofvahnpwgx"
+      SILICONFLOW_MODEL: deepseek-ai/DeepSeek-V4-Flash
+      SILICONFLOW_BASE_URL: "https://api.siliconflow.cn/v1"

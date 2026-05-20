@@ -10,6 +10,8 @@ const withSerwist = withSerwistInit({
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   outputFileTracingRoot: process.cwd(),
+  /** Docker 多阶段构建：仅打包运行所需文件 */
+  output: "standalone",
 };
 
 export default withSerwist(nextConfig);

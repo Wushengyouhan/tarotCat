@@ -1,0 +1,36 @@
+# dependencies & build output
+node_modules
+.next
+out
+
+# git / IDE
+.git
+.gitignore
+.cursor
+.idea
+
+# env & secrets（镜像构建时不应携带本机密钥）
+.env
+.env.*
+!.env.local.example
+
+# 本地参考（可能含敏感信息）
+docker-compose_参考.yml
+
+# 文档与草稿
+.scratch
+*.md
+!README.md
+
+# 测试
+coverage
+**/*.test.ts
+**/*.test.tsx
+vitest.config.ts
+src/test
+
+# 其他
+.DS_Store
+pnpm-debug.log*
+.github
+docker-compose*.yml

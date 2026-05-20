@@ -1,0 +1,16 @@
+# 与 docker-compose.yml 内容一致，便于复制到服务器（记得替换 API Key 占位符）。
+
+name: tarot-pwa
+
+services:
+  web:
+    image: crpi-wzkmn99umn8syi28.cn-shanghai.personal.cr.aliyuncs.com/wushengyouhan/tarotcat:latest
+    container_name: tarot-pwa
+    restart: unless-stopped
+    ports:
+      - "3001:3000"
+    environment:
+      NODE_ENV: production
+      SILICONFLOW_API_KEY: "REPLACE_WITH_YOUR_SILICONFLOW_API_KEY"
+      SILICONFLOW_MODEL: deepseek-ai/DeepSeek-V4-Flash
+      SILICONFLOW_BASE_URL: "https://api.siliconflow.cn/v1"

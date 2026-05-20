@@ -1,0 +1,57 @@
+# push 到 main：构建镜像并推送到阿里云 ACR
+# 在仓库 Settings → Secrets 中配置：
+#   ACR_REGISTRY   例：crpi-xxxx.cn-shanghai.personal.cr.aliyuncs.com（不要 https://）
+#   ACR_USERNAME
+#   ACR_PASSWORD
+#   ACR_NAMESPACE  命名空间，例：wushengyouhan
+#   ACR_REPOSITORY 仓库名，例：tarotcat
+
+name: Build and push to ACR
+
+on:
+  push:
+    branches: [main]
+
+env:
+  IMAGE_TAG_LATEST: latest
+
+jobs:
+  build-push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Aliyun ACR
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.ACR_REGISTRY }}
+          username: ${{ secrets.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Docker metadata
+        id: meta
+        run: |
+          REG="${{ secrets.ACR_REGISTRY }}"
+          NS="${{ secrets.ACR_NAMESPACE }}"
+          REPO="${{ secrets.ACR_REPOSITORY }}"
+          SHA_SHORT=$(echo "${{ github.sha }}" | cut -c1-7)
+          echo "image_base=${REG}/${NS}/${REPO}" >> "$GITHUB_OUTPUT"
+          echo "sha_short=${SHA_SHORT}" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.image_base }}:${{ env.IMAGE_TAG_LATEST }}
+            ${{ steps.meta.outputs.image_base }}:${{ steps.meta.outputs.sha_short }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

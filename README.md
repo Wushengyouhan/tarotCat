@@ -18,7 +18,7 @@ pnpm test
 pnpm build
 ```
 
-### 当前功能（MVP 进度）
+部署（Docker / 阿里云 ACR / GitHub Actions）见 **`部署.md`**。
 
 - 首页：填写问题 → 选择**单牌**或**三牌阵** → 开始占卜
 - `/reading`：洗牌 → 逐张翻牌 → 查看牌义 → 自动存入本机历史

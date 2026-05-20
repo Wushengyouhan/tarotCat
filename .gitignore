@@ -27,6 +27,12 @@
 *.pem
 .env*.local
 
+# 部署：服务器上的硅基流动等密钥（从 .env.deploy.example 复制）
+.env.deploy
+
+# 本地参考草稿（历史上可能含敏感信息，勿提交）
+docker-compose_参考.yml
+
 # debug
 npm-debug.log*
 yarn-debug.log*
