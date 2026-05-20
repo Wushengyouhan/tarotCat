@@ -1,3 +1,4 @@
+import { generateId } from "@/lib/generate-id";
 import { getMeaning } from "@/lib/tarot/card-meanings";
 import { defaultDeck } from "@/lib/tarot/deck";
 import type { ReadingSession } from "@/lib/tarot/reading-session";
@@ -25,7 +26,7 @@ export function buildReadingRecord(session: ReadingSession): ReadingHistoryRecor
   });
 
   return {
-    id: crypto.randomUUID(),
+    id: generateId(),
     createdAt: new Date().toISOString(),
     question: session.question,
     spreadId: session.spreadId,
