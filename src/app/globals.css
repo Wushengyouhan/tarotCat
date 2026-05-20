@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+@theme {
+  --color-void: #0a0612;
+  --color-mystic-deep: #1a0f2e;
+  --color-mystic-mid: #2d1b4e;
+  --color-mystic-glow: #6b3fa0;
+  --color-gold: #c9a227;
+  --color-gold-dim: #8a7020;
+  --color-star: #e8e0f0;
+  --font-display: "Georgia", "Songti SC", "SimSun", serif;
+  --font-body: system-ui, -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-void);
+  color: var(--color-star);
+  min-height: 100dvh;
+}
+
+.stars-bg {
+  background-color: var(--color-void);
+  background-image:
+    radial-gradient(1px 1px at 20% 30%, rgb(201 162 39 / 35%), transparent),
+    radial-gradient(1px 1px at 80% 10%, rgb(232 224 240 / 25%), transparent),
+    radial-gradient(1.5px 1.5px at 50% 80%, rgb(107 63 160 / 40%), transparent),
+    radial-gradient(ellipse at 50% 0%, rgb(45 27 78 / 80%) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 100%, rgb(26 15 46 / 90%) 0%, transparent 50%);
+}
+
+/* 切牌：双叠拉开 → 交叉换位 → 归位（约 2.8s 循环，供仪式阶段观看） */
+@keyframes tarot-cut-left {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) translateX(-14px) rotate(-6deg);
+  }
+  22% {
+    transform: translate(-50%, -50%) translateX(-52px) rotate(-12deg);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateX(40px) rotate(9deg);
+  }
+  78% {
+    transform: translate(-50%, -50%) translateX(-20px) rotate(-8deg);
+  }
+}
+
+@keyframes tarot-cut-right {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) translateX(14px) rotate(6deg);
+  }
+  22% {
+    transform: translate(-50%, -50%) translateX(52px) rotate(12deg);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateX(-40px) rotate(-9deg);
+  }
+  78% {
+    transform: translate(-50%, -50%) translateX(20px) rotate(8deg);
+  }
+}
+
+.tarot-cut-pile-left {
+  animation: tarot-cut-left 2.8s ease-in-out infinite;
+  transform-origin: center center;
+}
+
+.tarot-cut-pile-right {
+  animation: tarot-cut-right 2.8s ease-in-out infinite;
+  transform-origin: center center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tarot-cut-pile-left {
+    animation: none;
+    transform: translate(-50%, -50%) translateX(-22px) rotate(-5deg);
+  }
+
+  .tarot-cut-pile-right {
+    animation: none;
+    transform: translate(-50%, -50%) translateX(22px) rotate(5deg);
+  }
+}
