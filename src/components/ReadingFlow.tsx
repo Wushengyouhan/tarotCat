@@ -17,9 +17,6 @@ import { clearReadingDraft, loadReadingDraft } from "@/lib/reading-draft";
 import { ReadingSession } from "@/lib/tarot/reading-session";
 import { getSpread } from "@/lib/tarot/spread-registry";
 
-const SHUFFLE_AUTO_MS = 2800;
-const CUT_AUTO_MS = 3200;
-
 export function ReadingFlow() {
   const router = useRouter();
   const sessionRef = useRef<ReadingSession | null>(null);
@@ -44,30 +41,6 @@ export function ReadingFlow() {
     });
     rerender();
   }, [router]);
-
-  useEffect(() => {
-    const session = sessionRef.current;
-    if (!session || session.getPhase() !== "shuffling") return;
-
-    const timer = window.setTimeout(() => {
-      session.finishShuffling();
-      rerender();
-    }, SHUFFLE_AUTO_MS);
-
-    return () => window.clearTimeout(timer);
-  });
-
-  useEffect(() => {
-    const session = sessionRef.current;
-    if (!session || session.getPhase() !== "cutting") return;
-
-    const timer = window.setTimeout(() => {
-      session.finishCutting();
-      rerender();
-    }, CUT_AUTO_MS);
-
-    return () => window.clearTimeout(timer);
-  });
 
   const session = sessionRef.current;
   const spread = useMemo(
@@ -128,11 +101,17 @@ export function ReadingFlow() {
       ? `第 ${Math.min(revealIndex + 1, session.totalCards)} / ${session.totalCards} 张`
       : null;
 
+  const phaseTitle =
+    phase === "shuffling"
+      ? "洗牌"
+      : phase === "cutting"
+        ? "切牌"
+        : phase === "complete"
+          ? "牌面解读"
+          : "占卜进行中";
+
   return (
-    <PageShell
-      title={phase === "complete" ? "牌面解读" : "占卜进行中"}
-      subtitle={`「${session.question}」`}
-    >
+    <PageShell title={phaseTitle} subtitle={`「${session.question}」`}>
       {phase === "shuffling" ? <ShufflingView onComplete={handleShuffleComplete} /> : null}
 
       {phase === "cutting" ? <CuttingDeckView onComplete={handleCutComplete} /> : null}
