@@ -25,10 +25,8 @@ async function readWithIdleTimeout(
   throwIfAborted(signal);
 
   return new Promise((resolve, reject) => {
-    let timer: ReturnType<typeof setTimeout> | undefined;
-
     const cleanup = () => {
-      if (timer) clearTimeout(timer);
+      clearTimeout(timer);
       signal?.removeEventListener("abort", onAbort);
     };
 
@@ -37,7 +35,7 @@ async function readWithIdleTimeout(
       reject(new DOMException("Aborted", "AbortError"));
     };
 
-    timer = setTimeout(() => {
+    const timer = setTimeout(() => {
       cleanup();
       reject(new Error("解读响应超时，请稍后重试"));
     }, idleTimeoutMs);
