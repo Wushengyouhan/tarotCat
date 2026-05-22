@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { historyStore } from "@/lib/history/history-store";
 import { loadLastReadingId } from "@/lib/history/last-reading-id";
 import type { InterpretRequestBody } from "@/lib/ai/interpret-types";
@@ -12,6 +12,9 @@ import { getSpread } from "@/lib/tarot/spread-registry";
 type AiDeepReadProps = {
   session: ReadingSession;
 };
+
+const REQUEST_TIMEOUT_MS = 120_000;
+const STREAM_IDLE_TIMEOUT_MS = 30_000;
 
 function buildRequestBody(session: ReadingSession): InterpretRequestBody {
   const spread = getSpread(session.spreadId);
@@ -30,6 +33,20 @@ function buildRequestBody(session: ReadingSession): InterpretRequestBody {
   };
 }
 
+function formatInterpretError(err: unknown, userCancelled: boolean): string {
+  if (userCancelled) return "";
+  if (err instanceof DOMException && err.name === "AbortError") {
+    return "解读超时，请稍后重试";
+  }
+  if (err instanceof Error) {
+    if (err.name === "TimeoutError" || err.message.includes("timeout")) {
+      return "解读超时，请稍后重试";
+    }
+    return err.message;
+  }
+  return "解读失败";
+}
+
 export function AiDeepRead({ session }: AiDeepReadProps) {
   const [status, setStatus] = useState<"idle" | "streaming" | "done" | "error">("idle");
   const [interpretation, setInterpretation] = useState("");
@@ -39,6 +56,15 @@ export function AiDeepRead({ session }: AiDeepReadProps) {
   const pendingDeltaRef = useRef("");
   const rafIdRef = useRef<number | null>(null);
   const lastScrollAtRef = useRef(0);
+  const abortRef = useRef<AbortController | null>(null);
+  const requestIdRef = useRef(0);
+  const userCancelledRef = useRef(false);
+
+  useEffect(() => {
+    return () => {
+      abortRef.current?.abort();
+    };
+  }, []);
 
   const flushPendingDeltas = (sync: boolean) => {
     if (rafIdRef.current != null) {
@@ -72,7 +98,20 @@ export function AiDeepRead({ session }: AiDeepReadProps) {
     });
   };
 
+  function handleCancel() {
+    userCancelledRef.current = true;
+    abortRef.current?.abort();
+  }
+
   async function handleInterpret() {
+    abortRef.current?.abort();
+    userCancelledRef.current = false;
+
+    const requestId = ++requestIdRef.current;
+    const controller = new AbortController();
+    abortRef.current = controller;
+    const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+
     setStatus("streaming");
     setInterpretation("");
     setError(null);
@@ -87,7 +126,10 @@ export function AiDeepRead({ session }: AiDeepReadProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(buildRequestBody(session)),
+        signal: controller.signal,
       });
+
+      if (requestId !== requestIdRef.current) return;
 
       const contentType = response.headers.get("content-type") ?? "";
 
@@ -100,10 +142,16 @@ export function AiDeepRead({ session }: AiDeepReadProps) {
         throw new Error("服务端未返回流式响应");
       }
 
-      const full = await readOpenAIChatStream(response.body, (delta) => {
-        pendingDeltaRef.current += delta;
-        scheduleFlush();
-      });
+      const full = await readOpenAIChatStream(
+        response.body,
+        (delta) => {
+          pendingDeltaRef.current += delta;
+          scheduleFlush();
+        },
+        { signal: controller.signal, idleTimeoutMs: STREAM_IDLE_TIMEOUT_MS },
+      );
+
+      if (requestId !== requestIdRef.current) return;
 
       flushPendingDeltas(true);
 
@@ -118,8 +166,25 @@ export function AiDeepRead({ session }: AiDeepReadProps) {
         historyStore.updateAiText(readingId, full);
       }
     } catch (err) {
+      if (requestId !== requestIdRef.current) return;
+
+      const cancelled = userCancelledRef.current;
+      userCancelledRef.current = false;
+
+      if (cancelled) {
+        setStatus("idle");
+        setInterpretation("");
+        return;
+      }
+
       setStatus("error");
-      setError(err instanceof Error ? err.message : "解读失败");
+      setError(formatInterpretError(err, false));
+      setInterpretation("");
+    } finally {
+      clearTimeout(timeoutId);
+      if (abortRef.current === controller) {
+        abortRef.current = null;
+      }
     }
   }
 
@@ -128,7 +193,14 @@ export function AiDeepRead({ session }: AiDeepReadProps) {
 
   return (
     <section className="w-full">
-      {status === "error" && error ? <p className="sr-only">{error}</p> : null}
+      {status === "error" && error ? (
+        <p
+          role="alert"
+          className="mb-3 rounded-lg border border-red-400/30 bg-red-950/40 px-3 py-2 text-center text-sm text-red-200/90"
+        >
+          {error}
+        </p>
+      ) : null}
 
       {isActive ? (
         <article
@@ -146,6 +218,13 @@ export function AiDeepRead({ session }: AiDeepReadProps) {
               <p className="text-center text-sm text-[var(--color-star)]/70">
                 牌灵正在编织话语……
               </p>
+              <button
+                type="button"
+                onClick={handleCancel}
+                className="text-xs text-[var(--color-star)]/45 underline-offset-2 hover:text-[var(--color-star)]/65 hover:underline"
+              >
+                取消解读
+              </button>
             </div>
           ) : (
             <>
@@ -159,6 +238,16 @@ export function AiDeepRead({ session }: AiDeepReadProps) {
             </>
           )}
         </article>
+      ) : null}
+
+      {status === "streaming" && !waitingForFirstToken ? (
+        <button
+          type="button"
+          onClick={handleCancel}
+          className="mb-3 w-full text-center text-xs text-[var(--color-star)]/45 underline-offset-2 hover:text-[var(--color-star)]/65 hover:underline"
+        >
+          取消解读
+        </button>
       ) : null}
 
       {status !== "streaming" && status !== "done" ? (

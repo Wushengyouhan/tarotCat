@@ -40,6 +40,7 @@ export async function createTarotInterpretationStream(
       temperature: 0.8,
       max_tokens: 1024,
     }),
+    signal: AbortSignal.timeout(120_000),
   });
 
   if (!upstream.ok) {

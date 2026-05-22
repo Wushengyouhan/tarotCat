@@ -3,6 +3,9 @@ import type { InterpretErrorResponse, InterpretRequestBody } from "@/lib/ai/inte
 import type { SpreadId } from "@/lib/tarot/types";
 import { NextResponse } from "next/server";
 
+/** 自托管 / Vercel 上限制上游解读最长耗时，避免连接一直挂起 */
+export const maxDuration = 120;
+
 function isInterpretBody(value: unknown): value is InterpretRequestBody {
   if (!value || typeof value !== "object") return false;
   const body = value as InterpretRequestBody;

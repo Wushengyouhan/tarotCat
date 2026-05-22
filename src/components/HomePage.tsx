@@ -14,7 +14,9 @@ export function HomePage() {
 
   function handleSubmit(payload: ReadingStartPayload) {
     saveReadingDraft(payload);
-    router.push("/reading");
+    const search =
+      typeof window !== "undefined" ? window.location.search : "";
+    router.push(search ? `/reading${search}` : "/reading");
   }
 
   return (
