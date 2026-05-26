@@ -1,12 +1,9 @@
-# push 到 main：构建镜像并推送到阿里云 ACR
-# 在仓库 Settings → Secrets 中配置：
-#   ACR_REGISTRY   例：crpi-xxxx.cn-shanghai.personal.cr.aliyuncs.com（不要 https://）
-#   ACR_USERNAME
-#   ACR_PASSWORD
-#   ACR_NAMESPACE  命名空间，例：wushengyouhan
-#   ACR_REPOSITORY 仓库名，例：tarotcat
+# push 到 main：构建镜像 → 推送阿里云 ACR → SSH 服务器自动部署
+# 只需在仓库 Settings → Secrets and variables → Actions 中配置 1 个 Secret：
+#   SSH_PASSWORD   服务器 root 密码
+# （ACR 相关 Secret 如已配好则无需改动）
 
-name: Build and push to ACR
+name: Build, Push & Deploy
 
 on:
   push:
@@ -55,3 +52,19 @@ jobs:
             ${{ steps.meta.outputs.image_base }}:${{ steps.meta.outputs.sha_short }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+  deploy:
+    needs: build-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: 139.196.30.138
+          username: root
+          password: ${{ secrets.SSH_PASSWORD }}
+          script: |
+            cd /root/tarotcat
+            docker compose pull
+            docker compose up -d --remove-orphans
+            docker image prune -f
