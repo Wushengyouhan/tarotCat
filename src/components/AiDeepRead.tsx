@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo } from "react";
+import { marked } from "marked";
 import { historyStore } from "@/lib/history/history-store";
 import { loadLastReadingId } from "@/lib/history/last-reading-id";
 import type { InterpretRequestBody } from "@/lib/ai/interpret-types";
@@ -48,7 +49,9 @@ function formatInterpretError(err: unknown, userCancelled: boolean): string {
 }
 
 export function AiDeepRead({ session }: AiDeepReadProps) {
-  const [status, setStatus] = useState<"idle" | "streaming" | "done" | "error">("idle");
+  const [status, setStatus] = useState<"idle" | "streaming" | "done" | "error">(
+    "idle",
+  );
   const [interpretation, setInterpretation] = useState("");
   const [error, setError] = useState<string | null>(null);
   const outputRef = useRef<HTMLElement>(null);
@@ -189,7 +192,13 @@ export function AiDeepRead({ session }: AiDeepReadProps) {
   }
 
   const isActive = status === "streaming" || status === "done";
-  const waitingForFirstToken = status === "streaming" && interpretation.length === 0;
+  const waitingForFirstToken =
+    status === "streaming" && interpretation.length === 0;
+
+  const htmlContent = useMemo(() => {
+    if (!interpretation) return "";
+    return marked.parse(interpretation, { async: false }) as string;
+  }, [interpretation]);
 
   return (
     <section className="w-full">
@@ -205,7 +214,7 @@ export function AiDeepRead({ session }: AiDeepReadProps) {
       {isActive ? (
         <article
           ref={outputRef}
-          className="mb-4 min-h-[4.5rem] text-sm leading-relaxed whitespace-pre-wrap text-[var(--color-star)]/90"
+          className="prose-interpret mb-4 min-h-[4.5rem] text-sm leading-relaxed text-[var(--color-star)]/90"
           aria-live={status === "done" ? "polite" : "off"}
           aria-busy={status === "streaming"}
         >
@@ -228,7 +237,7 @@ export function AiDeepRead({ session }: AiDeepReadProps) {
             </div>
           ) : (
             <>
-              {interpretation}
+              <div dangerouslySetInnerHTML={{ __html: htmlContent }} />
               {status === "streaming" ? (
                 <span
                   className="ml-0.5 inline-block h-4 w-0.5 animate-pulse bg-[var(--color-gold)] align-middle"
@@ -261,7 +270,9 @@ export function AiDeepRead({ session }: AiDeepReadProps) {
       ) : null}
 
       {status === "done" ? (
-        <p className="text-center text-xs text-[var(--color-star)]/45">解读已保存至本机历史</p>
+        <p className="text-center text-xs text-[var(--color-star)]/45">
+          解读已保存至本机历史
+        </p>
       ) : null}
     </section>
   );
