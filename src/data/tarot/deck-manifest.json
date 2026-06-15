@@ -1,7 +1,7 @@
 {
   "deck": "Rider-Waite-Smith (tarot-json scans)",
   "source": "https://github.com/metabismuth/tarot-json",
-  "license": "MIT (dataset); card art public domain in US — see docs/adr/0002-tarot-deck-assets.md",
+  "license": "MIT (dataset); card art public domain in US — see docs/02-tarot-deck-assets.md",
   "cards": [
     {
       "id": "m00",

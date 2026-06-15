@@ -4,7 +4,7 @@
 
 ## 技术栈
 
-见 `docs/adr/0001-tech-stack.md`。
+见 `docs/01-tech-stack.md`。
 
 - Next.js 15 · TypeScript · Tailwind CSS 4 · Serwist (PWA)
 - pnpm · Vitest
@@ -60,4 +60,5 @@ pnpm clean && pnpm dev
 
 - PRD：`.scratch/tarot-app/PRD.md`
 - Issues：`.scratch/tarot-app/issues/`
-- 牌面资源：`public/tarot-cards/` · `docs/adr/0002-tarot-deck-assets.md`
+- PWA 与图标：`docs/03-pwa.md`
+- 牌面资源：`public/tarot-cards/` · `docs/02-tarot-deck-assets.md`

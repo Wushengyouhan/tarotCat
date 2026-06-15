@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="38%" r="72%">
+      <stop offset="0%" stop-color="#2d1b4e"/>
+      <stop offset="55%" stop-color="#1a0f2e"/>
+      <stop offset="100%" stop-color="#0a0612"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="18%" y1="12%" x2="82%" y2="88%">
+      <stop offset="0%" stop-color="#f0e4b8"/>
+      <stop offset="45%" stop-color="#c9a227"/>
+      <stop offset="100%" stop-color="#7a6318"/>
+    </linearGradient>
+    <linearGradient id="violet" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b5fcf"/>
+      <stop offset="100%" stop-color="#4a2878"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="soft-glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="3"/>
+    </filter>
+  </defs>
+
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+
+  <g fill="#e8e0f0" opacity="0.55">
+    <circle cx="88" cy="96" r="2"/>
+    <circle cx="412" cy="118" r="1.5"/>
+    <circle cx="64" cy="280" r="1.2"/>
+    <circle cx="448" cy="340" r="2"/>
+    <circle cx="128" cy="420" r="1.4"/>
+    <circle cx="392" cy="72" r="1"/>
+  </g>
+
+  <circle cx="256" cy="256" r="198" stroke="url(#gold)" stroke-width="2.5" opacity="0.45"/>
+  <circle cx="256" cy="256" r="168" stroke="#6b3fa0" stroke-width="1.5" opacity="0.35" stroke-dasharray="6 10"/>
+
+  <g filter="url(#soft-glow)" opacity="0.65">
+    <polygon points="256,118 378,330 134,330" fill="#6b3fa0"/>
+    <polygon points="256,394 134,182 378,182" fill="#6b3fa0"/>
+  </g>
+
+  <g filter="url(#glow)" stroke="url(#gold)" stroke-width="7" stroke-linejoin="round" fill="none">
+    <polygon points="256,118 378,330 134,330"/>
+    <polygon points="256,394 134,182 378,182"/>
+  </g>
+
+  <circle cx="256" cy="256" r="52" stroke="url(#violet)" stroke-width="2" opacity="0.85"/>
+  <circle cx="256" cy="256" r="14" fill="url(#gold)"/>
+  <circle cx="256" cy="256" r="6" fill="#0a0612" opacity="0.35"/>
+
+  <g fill="url(#gold)" opacity="0.92">
+    <circle cx="256" cy="98" r="5"/>
+    <circle cx="390" cy="338" r="4.5"/>
+    <circle cx="122" cy="338" r="4.5"/>
+    <circle cx="122" cy="174" r="4.5"/>
+    <circle cx="390" cy="174" r="4.5"/>
+    <circle cx="256" cy="414" r="5"/>
+  </g>
+</svg>

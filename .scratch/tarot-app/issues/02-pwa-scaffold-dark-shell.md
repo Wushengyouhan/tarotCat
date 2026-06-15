@@ -40,4 +40,4 @@ None - can start immediately
 - SW：`public/sw.js`（生产构建生成）；开发模式 Serwist 默认禁用
 - 测试：`src/components/HomePage.test.tsx`
 
-技术栈见 `docs/adr/0001-tech-stack.md`。
+技术栈见 `docs/01-tech-stack.md`。

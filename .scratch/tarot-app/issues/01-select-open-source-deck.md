@@ -8,7 +8,7 @@ Status: ready-for-agent
 
 ## What to build
 
-为 MVP 选定一套 **78 张、许可明确** 的韦特系替代牌组（禁止未授权 RWS 商业图），将图片资源纳入仓库（或构建可解析的静态资源路径），并写清许可证出处（`docs/adr/` 短 ADR 或 PRD Further Notes 更新均可）。
+为 MVP 选定一套 **78 张、许可明确** 的韦特系替代牌组（禁止未授权 RWS 商业图），将图片资源纳入仓库（或构建可解析的静态资源路径），并写清许可证出处（`docs/01-*.md` 决策文档或 PRD Further Notes 更新均可）。
 
 完成后，应用内任意牌面展示均可合法使用这套图。
 
@@ -28,7 +28,7 @@ None - can start immediately
 **完成于 2026-05-19**
 
 - 选型：[metabismuth/tarot-json](https://github.com/metabismuth/tarot-json)（MIT 数据集 + RWS 美区 PD 说明）
-- ADR：`docs/adr/0002-tarot-deck-assets.md`
+- ADR：`docs/02-tarot-deck-assets.md`
 - 图片：`public/tarot-cards/`（78× `.jpg`）
 - 清单：`src/data/tarot/deck-manifest.json`（`id` + `nameZh` + `image` 路径）
 - 致谢：`public/tarot-cards/ATTRIBUTION.md`

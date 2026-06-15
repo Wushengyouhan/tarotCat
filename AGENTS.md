@@ -10,4 +10,4 @@ Five canonical triage roles mapped to `Status:` lines in local issue files. See 
 
 ### Domain docs
 
-Single-context: `CONTEXT.md` at repo root and `docs/adr/` for ADRs. See `docs/agents/domain.md`.
+Single-context: `CONTEXT.md` at repo root and numbered docs in `docs/` (`01-*.md`, …). See `docs/agents/domain.md`.
